@@ -20,17 +20,29 @@
         app:ckCropOutput="true"
         app:ckZoom="off"/>
 
+    <TextView
+        android:id="@+id/tvHint"
+        android:layout_width="256dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:text="1. Normal tegak lurus kamera."/>
+
     <Button
         android:id="@+id/btn_capture"
         android:layout_width="256dp"
-        android:layout_height="96dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="Capture"
-        android:textSize="32sp"/>
+        android:textSize="20sp"/>
 
     <TextView
         android:layout_width="256dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
         android:textStyle="bold"
         android:textAlignment="center"

@@ -5,22 +5,22 @@
     android:layout_height="match_parent"
     android:paddingLeft="32dp"
     android:paddingRight="32dp"
-    tools:context="com.example.irfan.squarecamera.MainActivity"
+    tools:context="com.example.irfan.squarecamera.IdentityActivity"
     android:orientation="vertical"
     android:gravity="center">
 
-    <Button
-        android:id="@+id/btnMenuDataset"
+    <EditText
+        android:id="@+id/etNrp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ambil Data Set"
-        android:textAllCaps="false"/>
+        android:hint="NRP"
+        android:inputType="number"/>
 
     <Button
-        android:id="@+id/btnMenuPredict"
+        android:id="@+id/btnAmbilFoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Predict"
+        android:text="Mulai Ambil Foto"
         android:textAllCaps="false"/>
 
 </LinearLayout>

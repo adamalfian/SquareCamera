@@ -8,19 +8,18 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnCamerad;
+    protected Button btnCamerad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnCamerad = (Button) findViewById(R.id.btn_camerad);
+        btnCamerad = (Button) findViewById(R.id.btnMenuDataset);
         btnCamerad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CameradActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(MainActivity.this, IdentityActivity.class));
             }
         });
     }
