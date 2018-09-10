@@ -2,6 +2,7 @@ package com.example.irfan.squarecamera;
 
 import android.app.VoiceInteractor;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -11,19 +12,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Gallery;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.wonderkiln.camerakit.CameraKitError;
 import com.wonderkiln.camerakit.CameraKitEvent;
 import com.wonderkiln.camerakit.CameraKitEventListener;
@@ -31,14 +21,14 @@ import com.wonderkiln.camerakit.CameraKitImage;
 import com.wonderkiln.camerakit.CameraKitVideo;
 import com.wonderkiln.camerakit.CameraView;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class CameradActivity extends AppCompatActivity {
 
@@ -50,10 +40,7 @@ public class CameradActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camerad);
-
-        final String temp_url = "http://10.151.12.157:5000/predict";
-        final String temp_nrp = "05111440000186";
-
+        final Intent intent = getIntent();
         cameradListener = new CameraKitEventListener() {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
@@ -70,38 +57,25 @@ public class CameradActivity extends AppCompatActivity {
                 byte[] picture = cameraKitImage.getJpeg();
                 Bitmap result = BitmapFactory.decodeByteArray(picture, 0, picture.length);
                 result = Bitmap.createScaledBitmap(result, 512,512, true);
-                Toast.makeText(CameradActivity.this, "Captured" +
-                                Integer.toString(result.getHeight()) + " " +
-                                Integer.toString(result.getWidth()) + " " +
-                                Integer.toString(result.getByteCount()),
-                        Toast.LENGTH_LONG).show();
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                String myBase64Image = encodeToBase64(result, Bitmap.CompressFormat.JPEG, 100);
+                final ApiInterface api = Server.getclient().create(ApiInterface.class);
+                Log.d("test", "onImage: "+myBase64Image);
+                JSONObject paramObject = new JSONObject();
+                Call<ResponseApi> kirim =api.kirim(intent.getStringExtra("nrp"),"data:image/jpeg;base64,"+myBase64Image);
+                kirim.enqueue(new Callback<ResponseApi>() {
+                    @Override
+                    public void onResponse(Call<ResponseApi> call, Response<ResponseApi> response) {
+                        Toast.makeText(CameradActivity.this, "berhasil", Toast.LENGTH_SHORT).show();
+                    }
 
-//                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//                result.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                FileOutputStream outStream = null;
-                try {
-                    File sdCard = Environment.getExternalStorageDirectory();
-                    File dir = new File(sdCard.getAbsolutePath() + "/camtest");
-                    dir.mkdirs();
+                    @Override
+                    public void onFailure(Call<ResponseApi> call, Throwable t) {
+                        t.printStackTrace();
+                        Toast.makeText(CameradActivity.this, "anjir", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-                    String fileName = String.format("%d.jpg", System.currentTimeMillis());
-                    File outFile = new File(dir, fileName);
-
-                    outStream = new FileOutputStream(outFile);
-                    result.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-                    outStream.flush();
-                    outStream.close();
-                    Toast.makeText(CameradActivity.this, "Berhasil", Toast.LENGTH_SHORT).show();
-//                    Log.d(TAG, "onPictureTaken - wrote to " + outFile.getAbsolutePath());
-
-//                    refreshGallery(outFile);
-                } catch (FileNotFoundException e) {
-//                    print("FNF");
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                }
 
             }
 
@@ -135,4 +109,12 @@ public class CameradActivity extends AppCompatActivity {
         camerad.stop();
         super.onPause();
     }
+
+    public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality)
+    {
+        ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+        image.compress(compressFormat, quality, byteArrayOS);
+        return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
+    }
+
 }
