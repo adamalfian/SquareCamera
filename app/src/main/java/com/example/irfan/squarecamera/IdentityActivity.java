@@ -58,7 +58,7 @@ public class IdentityActivity extends AppCompatActivity {
 
     protected void showKacamataDialog() {
         loadingDialog
-                .setContentText("Apakah kamu memakai kacamata?")
+                .setContentText("Apakah anda berkacamata?")
                 .setCancelText("Tidak")
                 .setConfirmText("Ya")
                 .showCancelButton(true)
